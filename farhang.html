@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فەرهەنگی ڤانە و پەیڕەو</title>
+    <meta name="google" content="notranslate">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background 0.3s, color 0.3s;
+        }
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: background 0.3s;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .main-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .btn-status {
+            padding: 12px 5px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .bg-red { background-color: #e74c3c; }
+        .bg-orange { background-color: #f1c40f; color: #fff; font-size: 16px;}
+        .bg-blue-dark { background-color: #34495e; }
+
+        /* بەشی مێنۆ */
+        .menu-panel {
+            display: none;
+            background: #f1f2f6;
+            border: 2px solid #34495e;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .menu-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #34495e;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .menu-row {
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .menu-btn {
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        /* بەشی داخڵکردن */
+        .input-group { margin-bottom: 12px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 15px;
+            text-align: right;
+            outline: none;
+        }
+        input:focus { border-color: #f1c40f; }
+        .border-orange { border: 2px solid #f1c40f; }
+
+        .btn-action {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 12px;
+        }
+        .btn-green { background-color: #2ecc71; }
+        .btn-blue { background-color: #3498db; }
+
+        .view-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        .btn-view {
+            padding: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-yellow { background-color: #f1c40f; color: black; border: 1px solid #d4ac0d;}
+        .btn-gray { background-color: #7f8c8d; color: white; border: 1px solid #7f8c8d;}
+
+        /* ئەنجامەکان */
+        .result-box {
+            text-align: center;
+            padding: 15px;
+            color: #7f8c8d;
+            font-size: 16px;
+            border-top: 1px solid #eee;
+            margin-top: 10px;
+        }
+        .word-item {
+            background: #fcfcfc;
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            text-align: right;
+            position: relative;
+        }
+        .word-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .word-meaning {
+            color: #2ecc71;
+            margin-top: 5px;
+        }
+        .word-note {
+            font-size: 13px;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-top: 5px;
+        }
+        .delete-word {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            color: #e74c3c;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            background: none;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+    <!-- ناونیشانی فەرهەنگ -->
+    <h1 id="main-title">فەرهەنگی ڤانە و پەیڕەو</h1>
+
+    <!-- دوگمە سەرەکییەکان -->
+    <div class="main-buttons">
+        <div class="btn-status bg-red" onclick="alert('فەرهەنگی ڤانە و پەیڕەو\nفەرهەنگێکی ئۆفلایینی تایبەت بۆ پاراستنی وشەکان.')">دەربارەی من</div>
+        <div class="btn-status bg-orange" id="lang-label" onclick="toggleLanguage()">عەرەبی ⇄ کوردی</div>
+        <div class="btn-status bg-blue-dark" onclick="toggleMenu()">مێنۆ ☰</div>
+    </div>
+
+    <!-- بەشی مێنۆ -->
+    <div class="menu-panel" id="menuPanel">
+        <div class="menu-title">⚙️ ڕێکخستنەکانی فەرهەنگ</div>
+        
+        <!-- ١. گۆڕینی باکگراوند -->
+        <div class="menu-row">
+            <span>🎨 ڕەنگی پاشبنەما:</span>
+            <select id="bgSelect" onchange="changeBackground()" class="menu-btn">
+                <option value="default">ڕەنگی ئاسایی</option>
+                <option value="dark">ڕەنگی ڕەش (تاریک)</option>
+                <option value="sepia">ڕەنگی مۆر</option>
+            </select>
+        </div>
+
+        <!-- ٢. گۆڕینی قەبارەی فۆنت -->
+        <div class="menu-row">
+            <span>📏 قەبارەی فۆنتی وشەکان:</span>
+            <div>
+                <button class="menu-btn" onclick="changeFontSize(2)">+</button>
+                <button class="menu-btn" onclick="changeFontSize(-2)">-</button>
+            </div>
+        </div>
+
+        <!-- ٣. گۆڕینی ڕەنگی تێکستی وشەکان -->
+        <div class="menu-row">
+            <span>🖌️ ڕەنگی دەقی وشەکان:</span>
+            <input type="color" id="textColorInput" onchange="changeTextColor()" style="width:50px; padding:0; height:30px;">
+        </div>
+
+        <!-- ٤. ناردنی فەرهەنگ بۆ هاوڕێیان -->
+        <div class="menu-row" style="border-top: 1px solid #ddd; padding-top: 10px;">
+            <span>📤 ناردنی داتاکان بۆ هاوڕێیان:</span>
+            <button class="menu-btn" style="background:#3498db; color:white;" onclick="shareDictionary()">کۆپی و ناردن</button>
+        </div>
+        
+        <!-- ٥. هێنانی داتای هاوڕێیان -->
+        <div class="menu-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
+            <span>📥 داخڵکردنی داتای هاوڕێیان:</span>
+            <input type="text" id="importInput" placeholder="کۆدەکە لێرە پەیست بکە..." style="padding:5px;">
+            <button class="menu-btn" style="background:#2ecc71; color:white; width:100%;" onclick="importDictionary()">داخڵکردنی وشەکان</button>
+        </div>
+    </div>
+
+    <!-- بەشی داخڵکردنی وشەکان -->
+    <div class="input-group">
+        <input type="text" id="wordInput" placeholder="وشەکە بنووسە... (بۆ نموونە: کِتَاب)">
+    </div>
+    <div class="input-group">
+        <input type="text" id="meaningInput" placeholder="ماناکەی بنووسە... (بۆ نموونە: کتێب)">
+    </div>
+    <div class="input-group">
+        <input type="text" id="noteInput" class="border-orange" placeholder="تێبینی (ئارەزوومەندانە)...">
+    </div>
+
+    <!-- دوگمەی زیادکردن -->
+    <button class="btn-action btn-green" onclick="addWord()">+ زیادکردنی وشە</button>
+
+    <!-- دوگمەی گۆڕینی زمان -->
+    <button class="btn-action btn-blue" onclick="toggleLanguage()">گۆڕینی زمان (<span id="lang-btn-text">عەرەبی - کوردی</span>)</button>
+
+    <!-- بەشی گەڕان -->
+    <div class="input-group">
+        <input type="text" id="searchInput" oninput="searchWord()" placeholder="لێرە بگەڕێ بۆ وشە یان مانا...">
+    </div>
+
+    <!-- دوگمەکانی ڕێکخستن -->
+    <div class="view-options">
+        <button class="btn-view btn-yellow" onclick="sortWords()">ڕێکخستنی ئەبجەدی</button>
+        <button class="btn-view btn-gray" onclick="displayAll()">پیشاندانی لیست</button>
+    </div>
+
+    <!-- شوێنی پیشاندانی وشەکان -->
+    <div id="resultContainer" class="result-box">
+        هیچ وشەیەک نەدۆزرایەوە.
+    </div>
+</div>
+
+<script>
+    let dictionary = JSON.parse(localStorage.getItem('vane_dictionary')) || [];
+    let currentMode = "AR_KU"; 
+    let currentFontSize = 16;
+    let currentTextColor = "#2c3e50";
+
+    updateDisplay(dictionary);
+
+    function toggleMenu() {
+        const panel = document.getElementById('menuPanel');
+        if (panel.style.display === 'block') {
+            panel.style.display = 'none';
+        } else {
+            panel.style.display = 'block';
+        }
+    }
+
+    function addWord() {
+        const word = document.getElementById('wordInput').value.trim();
+        const meaning = document.getElementById('meaningInput').value.trim();
+        const note = document.getElementById('noteInput').value.trim();
+
+        if (word === "" || meaning === "") {
+            alert("تکایە خانەکانی وشە و مانا پڕبکەرەوە!");
+            return;
+        }
+
+        const newEntry = {
+            id: Date.now(),
+            word: word,
+            meaning: meaning,
+            note: note
+        };
+
+        dictionary.push(newEntry);
+        localStorage.setItem('vane_dictionary', JSON.stringify(dictionary));
+        
+        document.getElementById('wordInput').value = '';
+        document.getElementById('meaningInput').value = '';
+        document.getElementById('noteInput').value = '';
+
+        updateDisplay(dictionary);
+    }
+
+    function toggleLanguage() {
+        if (currentMode === "AR_KU") {
+            currentMode = "KU_AR";
+            document.getElementById('lang-label').innerText = "کوردی ⇄ عەرەبی";
+            document.getElementById('lang-btn-text').innerText = "کوردی - عەرەبی";
+            document.getElementById('wordInput').placeholder = "وشەکە بنووسە... (بۆ نموونە: کتێب)";
+            document.getElementById('meaningInput').placeholder = "ماناکەی بنووسە... (بۆ نموونە: کِتَاب)";
+        } else {
+            currentMode = "AR_KU";
+            document.getElementById('lang-label').innerText = "عەرەبی ⇄ کوردی";
+            document.getElementById('lang-btn-text').innerText = "عەرەبی - کوردی";
+            document.getElementById('wordInput').placeholder = "وشەکە بنووسە... (بۆ نموونە: کِتَاب)";
+            document.getElementById('meaningInput').placeholder = "ماناکەی بنووسە... (بۆ نموونە: کتێب)";
+        }
+    }
+
+    function updateDisplay(list) {
+        const container = document.getElementById('resultContainer');
+        if (list.length === 0) {
+            container.innerHTML = "هیچ وشەیەک نەدۆزرایەوە.";
+            return;
+        }
+
+        container.innerHTML = "";
+        list.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'word-item';
+            div.style.fontSize = currentFontSize + 'px';
+            div.innerHTML = `
+                <button class="delete-word" onclick="deleteWord(${item.id})">❌</button>
+                <div class="word-title" style="color: ${currentTextColor}">${item.word}</div>
+                <div class="word-meaning">⬅ ${item.meaning}</div>
+                ${item.note ? `<div class="word-note">تێبینی: ${item.note}</div>` : ''}
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function searchWord() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const filtered = dictionary.filter(item => 
+            item.word.toLowerCase().includes(query) || 
+            item.meaning.toLowerCase().includes(query)
+        );
+        updateDisplay(filtered);
+    }
+
+    function displayAll() {
+        document.getElementById('searchInput').value = '';
+        updateDisplay(dictionary);
+    }
+
+    function sortWords() {
+        const sorted = [...dictionary].sort((a, b) => a.word.localeCompare(b.word, 'ku'));
+        updateDisplay(sorted);
+    }
+
+    function deleteWord(id) {
+        if(confirm("ئایا دڵنیایت لە سڕینەوەی ئەم وشەیە؟")) {
+            dictionary = dictionary.filter(item => item.id !== id);
+            localStorage.setItem('vane_dictionary', JSON.stringify(dictionary));
+            updateDisplay(dictionary);
+        }
+    }
+
+    function changeBackground() {
+        const mode = document.getElementById('bgSelect').value;
+        const body = document.body;
+        const container = document.getElementById('mainContainer');
+        const menuPanel = document.getElementById('menuPanel');
+
+        if (mode === 'dark') {
+            body.style.backgroundColor = '#1e272e';
+            container.style.backgroundColor = '#2f3640';
+            container.style.color = 'white';
+            menuPanel.style.backgroundColor = '#f1f2f6';
+            menuPanel.style.color = '#333';
+        } else if (mode === 'sepia') {
+            body.style.backgroundColor = '#4a2840'; 
+            container.style.backgroundColor = '#5c3250';
+            container.style.color = '#f5f0f4';
+            menuPanel.style.backgroundColor = '#f1f2f6';
+            menuPanel.style.color = '#333';
+        } else {
+            body.style.backgroundColor = '#f9f9f9';
+            container.style.backgroundColor = 'white';
+            container.style.color = '#333';
+            menuPanel.style.backgroundColor = '#f1f2f6';
+            menuPanel.style.color = '#333';
+        }
+    }
+
+    function changeFontSize(amount) {
+        currentFontSize += amount;
+        if(currentFontSize < 12) currentFontSize = 12;
+        if(currentFontSize > 30) currentFontSize = 30;
+        updateDisplay(dictionary);
+    }
+
+    function changeTextColor() {
+        currentTextColor = document.getElementById('textColorInput').value;
+        updateDisplay(dictionary);
+    }
+
+    function shareDictionary() {
+        if(dictionary.length === 0) {
+            alert("فەرهەنگەکەت هێشتا چۆڵە و هیچ وشەیەکی تێدا نییە بۆ ناردن!");
+            return;
+        }
+        const cryptoData = btoa(unescape(encodeURIComponent(JSON.stringify(dictionary))));
+        navigator.clipboard.writeText(cryptoData);
+        alert("تەواوی وشەکانت کۆپی کران وەک کۆدێکی تایبەت! ئێستا دەتوانیت بۆ هاوڕێکەتی بنێریت.");
+    }
+
+    function importDictionary() {
+        const code = document.getElementById('importInput').value.trim();
+        if(!code) {
+            alert("تکایە سەرەتا کۆدەکە لێرە پەیست بکە!");
+            return;
+        }
+        try {
+            const decodedData = JSON.parse(decodeURIComponent(escape(atob(code))));
+            if(Array.isArray(decodedData)) {
+                decodedData.forEach(newEntry => {
+                    if(!dictionary.some(oldEntry => oldEntry.word === newEntry.word)) {
+                        dictionary.push(newEntry);
+                    }
+                });
+                localStorage.setItem('vane_dictionary', JSON.stringify(dictionary));
+                updateDisplay(dictionary);
+                document.getElementById('importInput').value = '';
+                alert("وشەکانی هاوڕێکەت بە سەرکەوتوویی بۆ فەرهەنگەکەت زیادکران!");
+            }
+        } catch(e) {
+            alert("کۆدەکە هەڵەیە، تکایە دڵنیابەوە کە کۆدەکەت بە تەواوی کۆپی کردووە!");
+        }
+    }
+</script>
+
+</body>
+</html>
